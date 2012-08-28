@@ -12,7 +12,7 @@ module UrlShortener
   class App < Sinatra::Base
 
     get '/' do
-      "First view!"
+      erb :index
     end
 
     post '/' do
