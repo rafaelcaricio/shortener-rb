@@ -4,31 +4,49 @@ require "spec_helper"
 
 describe 'The url shortener application' do
 
-  it 'should respond for the front page' do
+  it 'should be possible to access the front page' do
     get '/'
     last_response.should be_ok
   end
 
-  it 'should respond for a sequence' do
-    get '/somesequence'
-    last_response.should be_ok
+  it 'should be possible to create a new shortened url' do
+    post '/', :url => "http://caricio.com"
+    last_response.status.should == 302
+    last_response['Location'].should == 'http://example.org/1+'
   end
 
-  it 'should respond for a sequence with / at the end' do
-    get '/somesequence/'
-    last_response.should be_ok
+  it 'should not be possible call post without the :url param' do
+    post '/'
+    last_response.status.should == 404
   end
 
-  it 'should respond for analytics page' do
-    get '/somesequence+'
-    last_response.should be_ok
+  it 'should be possible to be redirected when access an shortened url' do
+    ShortenedUrl.create original_url: "http://caricio.com"
+
+    get '/1'
+    last_response.status.should == 302
+    last_response['Location'].should == 'http://caricio.com'
+
+    url = ShortenedUrl.find_by_original_url "http://caricio.com"
+    url.access_to_url.size.should == 1
   end
 
-  it 'should respond for analytics page with / at the end' do
-    get '/somesequence+/'
-    last_response.should be_ok
+  it 'should be possible to see analytivcs for the shortened url I just made' do
+    ShortenedUrl.create original_url: "http://caricio.com"
+
+    get '/1+'
+    last_response.status.should == 200
   end
 
+  it 'when requested to a invalid shortened url should redirect to 404 page' do
+    get '/Op'
+    last_response.status.should == 404
+  end
+
+  it 'when requested to a invalid analytics url should redirect to 404 page' do
+    get '/sA+'
+    last_response.status.should == 404
+  end
 end
 
 describe 'With my models' do

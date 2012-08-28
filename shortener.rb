@@ -26,24 +26,33 @@ module UrlShortener
 
   class App < Sinatra::Base
 
-
     get '/' do
       erb :index
     end
 
     post '/' do
-      "shorting url"
+      not_found unless params[:url]
+      shortened_url = ShortenedUrl.find_or_create_by_original_url params[:url]
+      redirect to("http://#{request.host}/#{shortened_url.id.to_s(36)}+")
     end
 
     get %r{^/(\w+)/?$} do |sequence|
-      "wow, shorted! looking for sequece #{sequence}"
+      shortened_url = ShortenedUrl.find_by_id(sequence.to_i(36))
+      not_found unless shortened_url
+      browser_name = 'other' unless request.user_agent
+      AccessToUrl.create(browser_name: browser_name, shortened_url: shortened_url)
+      redirect to(shortened_url.original_url)
     end
 
     get %r{^/(\w+)\+/?$} do |sequence|
-      "analytics for #{sequence}"
+      @shortened_url = ShortenedUrl.find_by_id(sequence.to_i(36))
+      not_found unless @shortened_url
+      @shorten_url = "http://#{request.host}/#{@shortened_url.id.to_s(36)}"
+      erb :analytics
     end
 
     not_found do
+      status 404
       "Oops! Page cannot be found!"
     end
 
