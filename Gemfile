@@ -1,17 +1,16 @@
 source :rubygems
 
 gem "sinatra"
-gem "data_mapper"
+gem "activerecord"
+gem "sinatra-activerecord"
 
 group :production do
   gem "pg"
-  gem "dm-postgres-adapter"
 end
 
 group :development, :test do
   gem "rspec"
   gem "rack-test"
   gem "sqlite3"
-  gem "dm-sqlite-adapter"
 end
 

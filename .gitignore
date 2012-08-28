@@ -12,6 +12,7 @@ test/tmp
 test/version_tmp
 tmp
 database.db
+*database_test.db
 
 # YARD artifacts
 .yardoc
