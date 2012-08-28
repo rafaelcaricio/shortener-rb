@@ -3,8 +3,8 @@
 require File.join(File.dirname(__FILE__), '..', 'shortener.rb')
 
 require "sinatra"
-require "rack/test"
 require 'active_record'
+require "rack/test"
 
 set :environment, :test
 

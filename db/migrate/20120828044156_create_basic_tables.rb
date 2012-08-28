@@ -6,15 +6,16 @@ class CreateBasicTables < ActiveRecord::Migration
     end
     add_index :shortened_urls, :original_url
 
-    create_table :access_to_url do |t|
+    create_table :access_to_urls do |t|
       t.string :browser_name
       t.integer :shortened_url_id
       t.timestamps
     end
+    add_index :access_to_urls, :shortened_url_id
   end
 
   def down
     drop_table :shortened_urls
-    drop_table :access_to_url
+    drop_table :access_to_urls
   end
 end

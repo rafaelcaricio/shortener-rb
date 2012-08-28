@@ -12,13 +12,13 @@ class ShortenedUrl < ActiveRecord::Base
   validates_format_of :original_url, with: /^https?:\/\/.*$/
   validates_uniqueness_of :original_url
   validates_presence_of :original_url
-  has_many :access_to_url, :dependent => :destroy
+  has_many :access_to_url, :class_name => 'AccessToUrl', :dependent => :destroy, :foreign_key => 'shortened_url_id'
 end
 
 
 class AccessToUrl < ActiveRecord::Base
   validates_presence_of :browser_name
-  belongs_to :shortened_url
+  belongs_to :shortened_url, :class_name => 'ShortenedUrl'
 end
 
 

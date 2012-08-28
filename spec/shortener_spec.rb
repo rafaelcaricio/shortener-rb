@@ -39,4 +39,14 @@ describe 'With my models' do
     from_db.original_url.should == "http://caricio.com"
   end
 
+  it 'I can create an access to an url' do
+    url = ShortenedUrl.create original_url: "http://caricio.com"
+    AccessToUrl.create browser_name: 'chrome', shortened_url: url
+    AccessToUrl.create browser_name: 'firefox', shortened_url: url
+
+    url = ShortenedUrl.find_by_original_url "http://caricio.com"
+    url.access_to_url.size.should == 2
+    url.access_to_url.order('created_at').first.browser_name.should == 'chrome'
+  end
+
 end
