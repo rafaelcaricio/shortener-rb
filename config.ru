@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 
-require 'shortener'
+require './shortener'
 run UrlShortenerApp
