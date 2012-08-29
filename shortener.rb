@@ -3,9 +3,8 @@
 require 'rubygems'
 require 'sinatra'
 require 'sinatra/activerecord'
+require './config/environments'
 
-
-set :database, ENV['HEROKU_POSTGRESQL_ROSE'] || "sqlite3://database.db"
 
 module Models
 
@@ -14,6 +13,20 @@ module Models
     validates_uniqueness_of :original_url
     validates_presence_of :original_url
     has_many :access_to_url, :class_name => 'AccessToUrl', :dependent => :destroy, :foreign_key => 'shortened_url_id'
+
+
+    def shorten_url request
+      port_schema = ""
+      if request.port != 80 
+        port_schema = ":#{request.port}"
+      end
+      "http://#{request.host}#{port_schema}/#{self.id.to_s(36)}"
+    end
+
+    def analytics_url request
+      "#{shorten_url(request)}+"
+    end
+
   end
 
 
@@ -36,7 +49,7 @@ module UrlShortener
     post '/' do
       not_found unless params[:url]
       shortened_url = Models::ShortenedUrl.find_or_create_by_original_url params[:url]
-      redirect to("http://#{request.host}/#{shortened_url.id.to_s(36)}+")
+      redirect to(shortened_url.analytics_url(request))
     end
 
     get %r{^/(\w+)/?$} do |sequence|
@@ -48,9 +61,10 @@ module UrlShortener
     end
 
     get %r{^/(\w+)\+/?$} do |sequence|
-      @shortened_url = Models::ShortenedUrl.find_by_id(sequence.to_i(36))
-      not_found unless @shortened_url
-      @shorten_url = "http://#{request.host}/#{@shortened_url.id.to_s(36)}"
+      shortened_url = Models::ShortenedUrl.find_by_id(sequence.to_i(36))
+      not_found unless shortened_url
+      @shorten_url = shortened_url.shorten_url request
+      @all_clicks = shortened_url.access_to_url.size
       erb :analytics
     end
 
