@@ -5,7 +5,7 @@ require 'sinatra/activerecord/rake'
 namespace :spec do
 
   RSpec::Core::RakeTask.new(:app) do |t|
-    t.rspec_opts = "--color"
+    t.rspec_opts = "--color -d"
     t.pattern = "spec/**/*_spec.rb"
   end
 

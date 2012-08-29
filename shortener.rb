@@ -14,7 +14,6 @@ module Models
     validates_presence_of :original_url
     has_many :access_to_url, :class_name => 'AccessToUrl', :dependent => :destroy, :foreign_key => 'shortened_url_id'
 
-
     def shorten_url request
       port_schema = ""
       if request.port != 80 
@@ -56,7 +55,7 @@ module UrlShortener
       shortened_url = Models::ShortenedUrl.find_by_id(sequence.to_i(36))
       not_found unless shortened_url
       browser_name = 'other' unless request.user_agent
-      Models::AccessToUrl.create(browser_name: browser_name, shortened_url: shortened_url)
+      Models::AccessToUrl.create browser_name: browser_name, shortened_url: shortened_url
       redirect to(shortened_url.original_url)
     end
 
