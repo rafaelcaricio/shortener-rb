@@ -27,6 +27,17 @@ module Models
   class AccessToUrl < ActiveRecord::Base
     validates_presence_of :browser_name
     belongs_to :shortened_url, :class_name => 'ShortenedUrl'
+    before_create :normalize_user_agent
+
+    def normalize_user_agent
+      self.browser_name = case self.browser_name.downcase
+        when /chrome/ then "chrome"
+        when /firefox/ then "firefox"
+        when /msie/ then "ie"
+        else
+          'others'
+        end
+    end
   end
 
 end
@@ -52,9 +63,9 @@ module UrlShortener
       browser_name = if request.user_agent
                        request.user_agent
                      else
-                       'other'
+                       'others'
                      end
-      mo = Models::AccessToUrl.create browser_name: browser_name, shortened_url: shortened_url
+      Models::AccessToUrl.create browser_name: browser_name, shortened_url: shortened_url
       redirect shortened_url.original_url
     end
 
@@ -75,6 +86,10 @@ module UrlShortener
 
       def server_url
         @base_url ||= request.base_url
+      end
+
+      def link_to path
+        "#{server_url}/#{path}"
       end
 
     end
