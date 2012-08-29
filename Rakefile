@@ -1,12 +1,6 @@
-require './shortener'
-require 'rspec/core/rake_task'
+require_relative 'shortener'
 require 'sinatra/activerecord/rake'
 
-namespace :spec do
+ENV['RACK_ENV'] ||= 'development'
 
-  RSpec::Core::RakeTask.new(:app) do |t|
-    t.rspec_opts = "--color -d"
-    t.pattern = "spec/**/*_spec.rb"
-  end
-
-end
+import 'tasks/rspec.task' if ENV['RACK_ENV'] == 'test' or ENV['RACK_ENV'] == 'development'
