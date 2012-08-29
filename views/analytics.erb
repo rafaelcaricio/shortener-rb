@@ -7,6 +7,18 @@
       <sub>accesses until now</sub>
     </div>
     <div class="browser-counter">
+      <table>
+        <tr>
+          <td>Browser name</td>
+          <td>Hits</td>
+        </tr>
+        <% for browser,count in @browsers %>
+        <tr>
+          <td><%= browser %></td>
+          <td><%= count %></td>
+        </tr>
+        <% end %>
+      </table>
     </div>
   </div>
 </div>

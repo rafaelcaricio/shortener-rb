@@ -74,6 +74,7 @@ module UrlShortener
       not_found unless shortened
       @shorten_url = shortened.url
       @all_clicks = shortened.access_to_url.size
+      @browsers = shortened.access_to_url.count(group: :browser_name).sort_by {|k,v| -v }
       erb :analytics
     end
 
