@@ -23,12 +23,15 @@ describe 'The url shortener application' do
   it 'should be possible to be redirected when access an shortened url' do
     Models::ShortenedUrl.create original_url: "http://caricio.com"
 
+    header 'User-Agent', 'Chrome'
     get '/1'
+
     last_response.status.should == 302
     last_response['Location'].should == 'http://caricio.com'
 
     url = Models::ShortenedUrl.find_by_original_url "http://caricio.com"
     url.access_to_url.size.should == 1
+    url.access_to_url.first.browser_name.should == 'Chrome'
   end
 
   it 'should be possible to see analytivcs for the shortened url I just made' do
